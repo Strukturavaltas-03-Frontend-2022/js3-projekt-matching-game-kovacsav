@@ -130,7 +130,7 @@ const turnUp = () => {
 const turnDown = (index) => {
   setTimeout(() => {
     changeClasslistHide(cardsDownAll[index], cardsUpAll[index]);
-  }, 500);
+  }, 1000);
   cardsUpAll[index].classList.remove("flashUp");
 };
 
