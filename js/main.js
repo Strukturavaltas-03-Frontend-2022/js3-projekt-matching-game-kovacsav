@@ -1,5 +1,3 @@
-"use stict";
-
 const cardsAll = document.querySelectorAll(".card");
 const cardsDownAll = document.querySelectorAll(".card__down");
 const cardsUpAll = document.querySelectorAll(".card__up");
@@ -10,8 +8,6 @@ let aktualIndex; // az aktuálisan kiválasztott kártya indexe
 let firstIndex; // az először kiválasztott kártya indexe
 let isFirst = true; //az először felfordított kártya felfordítva marad
 let stepCounter = 0; //ezzel számoljuk, hogy az első, vagy a második kártyát fordítottuk föl
-let isFirstGame = true; // ezzel figyeljük, hogy első játék-e, mert akkor rá kell
-// adni a kártyákra az eseményfigyelőt, egyébként nem
 let isFirstCardClick = true;
 let isEndGame = false;
 let timeStarting;
@@ -43,17 +39,13 @@ const setStopper = () => {
     setTime(time);
     stopper.textContent = timeText;
   }, 1000);
-  //console.log(timeStarting);
 };
 
 const endStopper = () => {
-  //console.log(timeStarting);
   clearInterval(timeStarting);
 };
 
 // ------------------------------------------------------------------------
-
-//console.log(cardsUpAll[0].src);
 
 // berakjuk egy tömbbe a képek elérési útvonalait, hogy majd keverni lehessen
 const fillImageSource = () => {
@@ -83,12 +75,15 @@ const changeClasslistHide = (removeList, addList) => {
 
 /* felfordításnál mit csinálunk:
     rá kell adni az eseményfigyelőket a kártyákra
-    a callback fgv-t muszály elnevezni, hogy majd az eseményfigyelőt le tudjuk szedni
     kattintásra a hide class csere + felfordítás animáció
     elágazás:
       lépésszám és pár-e vizsgálat
       ha nem, akkor visszafordítás
-      ha igen, akkor marad felfordítva és a találatszám növelése    
+      ha igen, akkor marad felfordítva és a találatszám növelése
+    elágazás:
+      meg van-e minden pár?
+      ha igen, akkor vége a játéknak => stopper megáll, nullázás,
+                5 mp múlva új játék indul
 */
 
 const turnUpFunction = (i) => {
@@ -110,7 +105,6 @@ const turnUpFunction = (i) => {
   } else if ((stepCounter == 2) & checkPair(firstIndex, aktualIndex)) {
     stepCounter = 0;
     pairCounter++;
-    //console.log("pairCounter: ", pairCounter);
   }
 
   //console.log(firstIndex, aktualIndex);
@@ -118,7 +112,6 @@ const turnUpFunction = (i) => {
 
   if (pairCounter == 5) {
     isEndGame = true;
-    //console.log(isEndGame);
     endStopper();
     setTimeout(() => {
       setDefaultValues();
@@ -130,11 +123,7 @@ const turnUp = () => {
   cardsDownAll.forEach((element, index) => {
     element.addEventListener("click", turnUpFunction.bind(null, index));
     // így lehet a callback fgv-nek argumentuma anélkül, hogy lefutna az eseménytől függetlenül
-    //console.log(element, index);
   });
-  /*for (let i = 0; i < cardsAll.length; i++) {
-    cardsDownAll[i].addEventListener("click", turnUpFunction(i));
-  }*/
 };
 
 /* kártya visszafordítása */
@@ -165,23 +154,9 @@ const setDefaultValues = () => {
   timeText = "00:00";
   isFirstCardClick = true;
   stopper.textContent = timeText;
-  isFirstGame = false;
   randomizeCards();
   fillImageSource();
 };
-
-/* új játéknál az előző eseménykezelőt leszedni a kártyákról, lenullázni a változókat és indulhat
-const newGame = () => {
-  document.querySelector(".button__newGame").addEventListener("click", () => {
-    //cardsAll.forEach((element) => element.replaceWith(element.cloneNode(true)));
-    // ez a cloneNode leklónozza a Node-ot, így leszedi róla az eseményfigyelőt
-    //cardsAll.forEach((element) => element.removeEventListener("click", funct));
-    setDefaultValues();
-    startGame();
-    isFirstGame = false;
-  });
-};
-*/
 
 /* pár vizsgálat */
 const checkPair = (index1, index2) => {
